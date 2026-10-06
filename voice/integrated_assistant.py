@@ -2,21 +2,28 @@
 import speech_recognition as sr
 import pyttsx3
 
-from vision_module import get_vision_result
-from response_handler import create_response
-from command_understanding import understand_command
-from text_response_handler import create_text_response
-
+from voice.vision_module import get_vision_result
+from voice.response_handler import create_response
+from voice.command_understanding import understand_command
+from voice.text_response_handler import create_text_response
+from ocr.ocr_camera import read_text
 # -----------------------------
 # Text-to-Speech
 # -----------------------------
-engine = pyttsx3.init()
-
-
 def speak(text):
     print("Assistant:", text)
-    engine.say(text)
-    engine.runAndWait()
+
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty("rate", 150)
+        engine.setProperty("volume", 1.0)
+
+        engine.say(text)
+        engine.runAndWait()
+        engine.stop()
+
+    except Exception as error:
+        print("TTS error:", error)
 
 
 # -----------------------------
@@ -91,12 +98,21 @@ def main():
 
         # Commands that request information from the vision module
         elif command == "READ_TEXT":
-            speak("Text reading requested.")
 
-            # Temporary test result until OCR is connected
-            ocr_result = "Welcome"
-            response = create_text_response(ocr_result)
-            speak(response)
+            speak("Please show the text to the camera.")
+
+            ocr_result = read_text()
+
+            if ocr_result:
+
+               print("OCR:", ocr_result)
+
+               response = create_text_response(ocr_result)
+               speak(response)
+
+            else:
+
+             speak("Sorry, I could not read the text.")
             
         elif command in [
             "OBJECT_QUERY",
