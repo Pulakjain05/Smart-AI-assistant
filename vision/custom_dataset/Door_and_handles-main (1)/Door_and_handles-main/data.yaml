@@ -1,0 +1,11 @@
+# Training images
+train: train/images
+
+# Validation images
+val: valid/images
+
+# Number of classes
+nc: 2
+
+# Class names
+names: ['door', 'handle']
