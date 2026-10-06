@@ -1,4 +1,4 @@
-
+﻿
 def understand_command(text):
     """Convert a spoken sentence into a recognized command."""
 
@@ -41,13 +41,15 @@ def understand_command(text):
         return "BEHIND_QUERY"
 
     # Front / ahead
-    
+
     # Front / ahead
     elif any(phrase in text for phrase in [
         "what is ahead",
         "what's ahead",
         "what is the head",
-        "what's the head",
+"what's the head",
+"what is a head",
+"what's a head",
         "what is in ahead",
         "what is in front of me",
         "in front of me",
@@ -59,6 +61,7 @@ def understand_command(text):
 
     # Read text
     elif any(phrase in text for phrase in [
+        "read",
         "read this",
         "read the text",
         "read this text",
@@ -78,7 +81,7 @@ def understand_command(text):
         return "DESCRIBE_SCENE"
 
     # Help
-   
+
     # Help: match complete words and common phrases
     elif any(phrase in text.split() for phrase in ["help", "emergency"]):
         return "HELP"

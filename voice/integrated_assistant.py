@@ -1,8 +1,8 @@
-
+﻿
 import speech_recognition as sr
 import pyttsx3
 
-from voice.vision_module import get_vision_result
+from vision.vision_interface import VisionInterface
 from voice.response_handler import create_response
 from voice.command_understanding import understand_command
 from voice.text_response_handler import create_text_response
@@ -30,6 +30,7 @@ def speak(text):
 # Speech Recognition
 # -----------------------------
 recognizer = sr.Recognizer()
+vision = VisionInterface()
 
 
 def listen_for_command():
@@ -94,6 +95,7 @@ def main():
         # Stop assistant
         if command == "STOP":
             speak("Assistant stopped.")
+            vision.close()
             break
 
         # Commands that request information from the vision module
@@ -113,7 +115,7 @@ def main():
             else:
 
              speak("Sorry, I could not read the text.")
-            
+
         elif command in [
             "OBJECT_QUERY",
             "LEFT_QUERY",
@@ -124,7 +126,7 @@ def main():
             try:
                 print("Sending command to Vision Module...")
 
-                result = get_vision_result(command)
+                result = vision.get_result(command)
                 print("Vision:", result)
 
                 response = create_response(result)

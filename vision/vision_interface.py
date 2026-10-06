@@ -1,7 +1,7 @@
 import cv2
 
-from detection import ObjectDetector
-from utils import get_position
+from vision.detection import ObjectDetector
+from vision.utils import get_position
 
 
 class VisionInterface:

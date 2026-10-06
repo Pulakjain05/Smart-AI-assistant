@@ -1,6 +1,6 @@
-from ultralytics import YOLO
+﻿from ultralytics import YOLO
 
-from config import (
+from vision.config import (
     MODEL_PATH,
     DOOR_MODEL_PATH,
     CONFIDENCE_THRESHOLD,
@@ -121,4 +121,6 @@ class ObjectDetector:
                 filtered_detections.append(detection)
 
         # Return the final filtered detections
+
+
         return filtered_detections

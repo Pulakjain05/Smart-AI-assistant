@@ -1,11 +1,9 @@
 # YOLO model
-MODEL_PATH = "models/yolo11n.pt"
-
-# Custom door and handle model
-DOOR_MODEL_PATH = "runs/detect/train-4/weights/best.pt"
+MODEL_PATH = "vision/models/yolo11n.pt"
+DOOR_MODEL_PATH = "vision/runs/detect/train-4/weights/best.pt"
 
 # Detection settings
-CONFIDENCE_THRESHOLD = 0.50
+CONFIDENCE_THRESHOLD = 0.30
 IMAGE_SIZE = 640
 
 # Position settings

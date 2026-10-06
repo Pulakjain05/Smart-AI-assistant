@@ -1,3 +1,4 @@
+﻿
 
 def create_response(vision_result):
 
@@ -7,31 +8,23 @@ def create_response(vision_result):
 
     result = vision_result.lower().strip()
 
-    if result == "unknown" or result == "none":
+    # Handle unknown results
+    if result in ["unknown", "none"]:
         return "Sorry, I couldn't identify the object clearly."
 
-    # Identify the object
-    object_name = None
+    # Split the result
+    parts = [part.strip() for part in result.split(",")]
 
-    known_objects = [
-        "person", "chair", "door", "vehicle",
-        "stairs", "table", "wall", "bicycle"
-    ]
+    # First part is normally the object name
+    object_name = parts[0]
 
-    for obj in known_objects:
-        if obj in result:
-            object_name = obj
-            break
-
-    if object_name is None:
+    if not object_name:
         return "Sorry, I couldn't identify the object clearly."
 
     # Extract distance
     distance = ""
 
-    for word in result.split(","):
-        word = word.strip()
-
+    for word in parts:
         if "metre" in word or "meter" in word:
             distance = word
             break
@@ -51,11 +44,13 @@ def create_response(vision_result):
     # Build natural spoken response
     article = "an" if object_name[0] in "aeiou" else "a"
 
-    if object_name == "stairs":
-        subject = "There are stairs"
+    # Special plural objects
+    if object_name in ["stairs", "people"]:
+        subject = f"There are {object_name}"
     else:
         subject = f"There is {article} {object_name}"
 
+    # Add distance and direction
     if distance and direction:
         return f"{subject} approximately {distance} {direction}."
 
