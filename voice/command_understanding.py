@@ -1,4 +1,5 @@
 ﻿
+
 def understand_command(text):
     """Convert a spoken sentence into a recognized command."""
 
@@ -11,8 +12,19 @@ def understand_command(text):
     for mark in ["?", ".", ",", "!"]:
         text = text.replace(mark, "")
 
-    # Left direction
+    # Distance query
     if any(phrase in text for phrase in [
+        "how close is the obstacle",
+        "how far is the obstacle",
+        "what is the distance",
+        "tell me the distance",
+        "how close is it",
+        "distance ahead"
+    ]):
+        return "DISTANCE_QUERY"
+
+    # Left direction
+    elif any(phrase in text for phrase in [
         "on my left",
         "to my left",
         "left side",
@@ -41,15 +53,13 @@ def understand_command(text):
         return "BEHIND_QUERY"
 
     # Front / ahead
-
-    # Front / ahead
     elif any(phrase in text for phrase in [
         "what is ahead",
         "what's ahead",
         "what is the head",
-"what's the head",
-"what is a head",
-"what's a head",
+        "what's the head",
+        "what is a head",
+        "what's a head",
         "what is in ahead",
         "what is in front of me",
         "in front of me",
@@ -81,12 +91,10 @@ def understand_command(text):
         return "DESCRIBE_SCENE"
 
     # Help
-
-    # Help: match complete words and common phrases
-    elif any(phrase in text.split() for phrase in ["help", "emergency"]):
+    elif any(word in text.split() for word in ["help", "emergency"]):
         return "HELP"
 
-    # Stop: match supported stop commands
+    # Stop
     elif text in [
         "stop",
         "stop this",
@@ -112,9 +120,9 @@ if __name__ == "__main__":
         "Read this text",
         "Help me",
         "Stop listening",
-        "Stop this",
-        "Please stop listening",
-        "How is the weather?"
+        "How is the weather?",
+        "How close is the obstacle?",
+        "What is the distance ahead?"
     ]
 
     for sentence in test_commands:

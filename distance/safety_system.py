@@ -1,109 +1,98 @@
-import time
 
-# -----------------------------
-# AI-VISION SAFETY MODULE
-# Member 4
-# -----------------------------
+# AI-VISION SAFETY SYSTEM
+# Simulated safety logic for the wearable assistant
 
-SAFE_DISTANCE = 150      # cm
+SAFE_DISTANCE = 150       # cm
 DANGER_DISTANCE = 80     # cm
 
 
 def check_obstacle(distance):
-    print(f"\nDistance detected: {distance} cm")
+    """Classify the distance and simulate a safety response."""
+
+    if distance < 0:
+        print("Invalid distance. Please enter a non-negative value.")
+        return "INVALID"
+
+    print(f"\nDistance detected: {distance:.1f} cm")
 
     if distance <= DANGER_DISTANCE:
-        print("⚠️ DANGER! Obstacle is very close.")
+        print("DANGER: Obstacle is very close!")
         vibration_alert()
+        return "DANGER"
 
     elif distance <= SAFE_DISTANCE:
-        print("⚠️ WARNING! Obstacle detected nearby.")
+        print("WARNING: Obstacle detected nearby.")
+        return "WARNING"
 
     else:
-        print("✅ Path is clear.")
+        print("SAFE: Path is clear.")
+        return "SAFE"
 
 
 def vibration_alert():
-    print("📳 VIBRATION MOTOR: ON")
-    time.sleep(1)
-    print("📳 VIBRATION MOTOR: OFF")
+    """Simulate a vibration motor alert in the terminal."""
+    print("VIBRATION MOTOR: ON (simulation)")
+    print("VIBRATION MOTOR: OFF (simulation)")
 
 
 def sos_alert():
-    print("\n🚨 SOS BUTTON ACTIVATED!")
-    print("🚨 EMERGENCY ALERT TRIGGERED!")
-    print("📍 Location sharing can be connected later.")
-    print("📢 Emergency assistance required.")
+    """Simulate an SOS emergency alert."""
+    print("\nSOS BUTTON ACTIVATED!")
+    print("Emergency assistance required.")
+    print("Location sharing is not connected yet.")
 
 
+def get_distance_response(distance):
+    """Convert a distance into a spoken safety message."""
+
+    status = check_obstacle(distance)
+
+    if status == "DANGER":
+        return (
+            f"Danger! An obstacle is only {distance:.0f} "
+            "centimetres away. Please be careful."
+        )
+
+    elif status == "WARNING":
+        return (
+            f"Warning. An obstacle is approximately "
+            f"{distance:.0f} centimetres away."
+        )
+
+    elif status == "SAFE":
+        return "The simulated sensor indicates the path is clear."
+
+    return "Sorry, the distance reading is invalid."
 def main():
-
     print("================================")
     print(" AI-VISION SAFETY SYSTEM")
-    print(" Member 4 - Safety Module")
+    print(" Distance module test")
     print("================================")
 
     while True:
-
-        print("\nChoose an option:")
-        print("1. Enter obstacle distance")
+        print("\n1. Enter obstacle distance")
         print("2. Activate SOS")
         print("3. Exit")
 
-        choice = input("\nEnter choice: ")
+        choice = input("Enter choice: ").strip()
 
         if choice == "1":
-
             try:
-                distance = float(
-                    input("Enter distance in cm: ")
-                )
-
+                distance = float(input("Enter distance in cm: "))
                 check_obstacle(distance)
-
             except ValueError:
-                print("❌ Please enter a valid number.")
+                print("Invalid input. Enter a number, such as 75.")
 
         elif choice == "2":
-
             sos_alert()
 
         elif choice == "3":
-
-            print("Safety system stopped.")
+            print("Safety system test ended.")
             break
 
         else:
-
-            print("❌ Invalid choice.")
+            print("Please choose 1, 2, or 3.")
 
 
 if __name__ == "__main__":
-    main() 
-    from hardware_interface import  (
-        read_distance,
-        vibration_on,
-        vibration_off,
-        read_sos_button
-    ) 
-    def main():
-        check_safety(distance)
-
-    if distance > 150:
-        print("✅ SAFE")
-        vibration_off()
-
-    elif distance > 80:
-        print("⚠️ WARNING: Obstacle is getting closer.")
-        vibration_off()
-
-    else:
-        print("🚨 DANGER: Obstacle is very close!")
-        vibration_on() 
-        distance = read_distance()
-
-check_safety(distance)
-
-if read_sos_button():
-    print("🚨 SOS ALERT ACTIVATED!")
-    print("Emergency assistance required.")
+    main()

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
-
+from distance.safety_system import check_obstacle
 # ---------------------------------
 # AI-VISION AUTOMATIC SENSOR SIMULATOR
 # Member 4 - Safety & Wearable
@@ -11,6 +11,10 @@ SAFE_DISTANCE = 150
 DANGER_DISTANCE = 80
 
 running = False
+
+# Simulated vibration modes
+vibration_mode = "SAFE"
+vibration_phase = False
 
 
 def get_sensor_distance():
@@ -22,9 +26,51 @@ def get_sensor_distance():
 
     return random.randint(30, 220)
 
+def update_vibration_display():
+    """Simulate continuous and intermittent vibration patterns."""
+    global vibration_phase
+
+    if vibration_mode == "DANGER":
+        # Continuous vibration for a very close obstacle
+        vibration_value.config(
+            text="ON - CONTINUOUS (simulated)",
+            fg="red"
+        )
+
+    elif vibration_mode == "WARNING":
+        # Intermittent vibration for a nearby obstacle
+        vibration_phase = not vibration_phase
+
+        if vibration_phase:
+            vibration_value.config(
+                text="ON - PULSE (simulated)",
+                fg="orange"
+            )
+        else:
+            vibration_value.config(
+                text="OFF - PULSE (simulated)",
+                fg="orange"
+            )
+
+    elif vibration_mode == "SOS":
+        # Flashing simulated emergency pattern
+        vibration_phase = not vibration_phase
+        vibration_value.config(
+            text="SOS - ALERT ON" if vibration_phase
+            else "SOS - ALERT OFF",
+            fg="red"
+        )
+
+    else:
+        vibration_value.config(
+            text="OFF",
+            fg="green"
+        )
+
+    window.after(300, update_vibration_display)
 
 def update_sensor():
-    global running
+    global running, vibration_mode
 
     if not running:
         return
@@ -32,60 +78,30 @@ def update_sensor():
     # Get simulated sensor value
     distance = get_sensor_distance()
 
-    distance_value.config(
-        text=f"{distance} cm"
-    )
+    distance_value.config(text=f"{distance} cm")
 
-    # Safety decision
-    if distance <= DANGER_DISTANCE:
+    # Use the shared safety logic
+    safety_status = check_obstacle(distance)
 
-        status_value.config(
-            text="DANGER",
-            fg="red"
-        )
+    # Update the dashboard based on the result
+    if safety_status == "DANGER":
+        vibration_mode = "DANGER"
+        status_value.config(text="DANGER", fg="red")
+        warning_value.config(text="OBSTACLE VERY CLOSE!")
 
-        warning_value.config(
-            text="⚠️ OBSTACLE VERY CLOSE!"
-        )
 
-        vibration_value.config(
-            text="ON 📳",
-            fg="red"
-        )
+    elif safety_status == "WARNING":
+        vibration_mode = "WARNING"
+        status_value.config(text="WARNING", fg="orange")
+        warning_value.config(text="OBSTACLE DETECTED NEARBY")
 
-    elif distance <= SAFE_DISTANCE:
+    elif safety_status == "SAFE":
+        vibration_mode = "SAFE"
+        status_value.config(text="SAFE", fg="green")
+        warning_value.config(text="PATH IS CLEAR")
 
-        status_value.config(
-            text="WARNING",
-            fg="orange"
-        )
 
-        warning_value.config(
-            text="⚠️ OBSTACLE DETECTED NEARBY"
-        )
-
-        vibration_value.config(
-            text="OFF",
-            fg="orange"
-        )
-
-    else:
-
-        status_value.config(
-            text="SAFE",
-            fg="green"
-        )
-
-        warning_value.config(
-            text="✅ PATH IS CLEAR"
-        )
-
-        vibration_value.config(
-            text="OFF",
-            fg="green"
-        )
-
-    # Update every 1 second
+    # Update every second
     window.after(1000, update_sensor)
 
 
@@ -106,7 +122,8 @@ def start_sensor():
 
 def stop_sensor():
 
-    global running
+    global running, vibration_mode
+    vibration_mode = "SAFE"
 
     running = False
 
@@ -130,7 +147,8 @@ def stop_sensor():
 
 
 def activate_sos():
-
+    global vibration_mode
+    vibration_mode = "SOS"
     messagebox.showwarning(
         "SOS ALERT",
         "Emergency alert triggered!\n\n"
@@ -289,5 +307,5 @@ sos_button = tk.Button(
 
 sos_button.pack(pady=25)
 
-
+window.after(300, update_vibration_display)
 window.mainloop()
