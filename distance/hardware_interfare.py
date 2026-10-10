@@ -1,50 +1,60 @@
-# hardware_interface.py
 
-# -------------------------------
-# SIMULATED HARDWARE INTERFACE
-# -------------------------------
+# distance/hardware_interface.py
+# Simulated hardware interface
+# Real sensor and vibration motor are not connected yet.
 
 def read_distance():
-    """
-    Simulates distance sensor reading.
-    Later this function will read from
-    the real Raspberry Pi sensor.
-    """
-    distance = float(input("Enter distance in cm: "))
-    return distance
+    """Simulate a distance sensor reading."""
+    try:
+        distance = float(input("Enter distance in cm: "))
+
+        if distance < 0:
+            print("Invalid distance. Enter a non-negative value.")
+            return None
+
+        return distance
+
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return None
 
 
 def vibration_on():
-    print("🔴 VIBRATION MOTOR: ON")
+    """Simulate turning the vibration motor on."""
+    print("VIBRATION MOTOR: ON (simulation)")
 
 
 def vibration_off():
-    print("🟢 VIBRATION MOTOR: OFF")
+    """Simulate turning the vibration motor off."""
+    print("VIBRATION MOTOR: OFF (simulation)")
 
 
 def read_sos_button():
-    """
-    Simulates SOS button.
-    Enter y for YES, n for NO.
-    """
-    choice = input("Press SOS button? (y/n): ").lower()
+    """Simulate an SOS button."""
+    choice = input("Press SOS button? (y/n): ").strip().lower()
+    return choice == "y"
 
-    if choice == "y":
-        return True
 
-    return False 
+def main():
     print("AI-VISION HARDWARE INTERFACE")
-print("----------------------------")
+    print("----------------------------")
 
-distance = read_distance()
-print("Distance:", distance, "cm")
+    distance = read_distance()
 
-if distance <= 20:
-    vibration_on()
-else:
-    vibration_off()
+    if distance is not None:
+        print(f"Distance: {distance:.1f} cm")
 
-if read_sos_button():
-    print("🚨 SOS ACTIVATED!")
-else:
-    print("SOS: OFF")
+        # Temporary test threshold; not the final safety logic.
+        if distance <= 20:
+            vibration_on()
+        else:
+            vibration_off()
+
+    if read_sos_button():
+        print("SOS ACTIVATED! (simulation)")
+    else:
+        print("SOS: OFF")
+
+
+if __name__ == "__main__":
+    main()
