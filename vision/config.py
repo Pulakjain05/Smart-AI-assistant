@@ -1,6 +1,7 @@
 # YOLO model
 MODEL_PATH = "vision/models/yolo11n.pt"
 DOOR_MODEL_PATH = "vision/runs/detect/train-4/weights/best.pt"
+STAIRS_MODEL_PATH = "runs/detect/vision/runs/detect/stairs-2/weights/best.pt"
 
 # Detection settings
 CONFIDENCE_THRESHOLD = 0.30

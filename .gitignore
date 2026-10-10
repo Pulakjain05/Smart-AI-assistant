@@ -3,3 +3,13 @@ __pycache__
 
 # Stairs dataset files (keep dataset on laptop, not GitHub)
 vision/stairs_dataset/
+
+# YOLO training outputs
+runs/
+vision/runs/
+
+# Local test image
+test.jpg
+
+# Local stairs dataset
+vision/stairs_dataset/

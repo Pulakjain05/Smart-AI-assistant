@@ -3,6 +3,7 @@
 from vision.config import (
     MODEL_PATH,
     DOOR_MODEL_PATH,
+    STAIRS_MODEL_PATH,
     CONFIDENCE_THRESHOLD,
     IMAGE_SIZE
 )
@@ -16,8 +17,10 @@ class ObjectDetector:
         # Load the custom model for doors and handles
         self.door_model = YOLO(DOOR_MODEL_PATH)
 
-    def detect(self, frame):
+        # Load the custom model for stairs
+        self.stairs_model = YOLO(STAIRS_MODEL_PATH)
 
+    def detect(self, frame):
         # Run the general YOLO model
         general_results = self.model(
             frame,
@@ -26,11 +29,18 @@ class ObjectDetector:
             verbose=False
         )
 
-        # Run the custom door/handle model
-        # A slightly higher threshold helps reduce false handle detections
+        # Run the door and handle model
         door_results = self.door_model(
             frame,
             conf=0.60,
+            imgsz=IMAGE_SIZE,
+            verbose=False
+        )
+
+        # Run the stairs model
+        stairs_results = self.stairs_model(
+            frame,
+            conf=0.40,
             imgsz=IMAGE_SIZE,
             verbose=False
         )
@@ -40,12 +50,9 @@ class ObjectDetector:
         # Process general YOLO detections
         for result in general_results:
             for box in result.boxes:
-
                 class_id = int(box.cls[0])
                 confidence = float(box.conf[0])
-
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
-
                 object_name = self.model.names[class_id]
 
                 detections.append({
@@ -54,19 +61,28 @@ class ObjectDetector:
                     "bbox": [x1, y1, x2, y2]
                 })
 
-        # Process custom door/handle detections
+        # Process door and handle detections
         for result in door_results:
             for box in result.boxes:
-
                 class_id = int(box.cls[0])
                 confidence = float(box.conf[0])
-
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
-
                 object_name = self.door_model.names[class_id]
 
                 detections.append({
                     "object": object_name,
+                    "confidence": confidence,
+                    "bbox": [x1, y1, x2, y2]
+                })
+
+        # Process stairs detections
+        for result in stairs_results:
+            for box in result.boxes:
+                confidence = float(box.conf[0])
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+
+                detections.append({
+                    "object": "stairs",
                     "confidence": confidence,
                     "bbox": [x1, y1, x2, y2]
                 })
@@ -79,35 +95,25 @@ class ObjectDetector:
 
         filtered_detections = []
 
-        # Check every detection
+        # Keep all detections except handles until they are checked
         for detection in detections:
-
-            # Keep everything except handles
             if detection["object"] != "handle":
                 filtered_detections.append(detection)
                 continue
 
-            # Get handle bounding box
+            # Find the center of the handle
             handle_x1, handle_y1, handle_x2, handle_y2 = detection["bbox"]
-
-            # Find center point of the handle
             handle_center_x = (handle_x1 + handle_x2) / 2
             handle_center_y = (handle_y1 + handle_y2) / 2
 
             handle_is_near_door = False
 
-            # Compare the handle with every detected door
+            # Check whether the handle is inside or near a detected door
             for door in doors:
-
-                # Get door bounding box
                 door_x1, door_y1, door_x2, door_y2 = door["bbox"]
-
-                # Slightly expand the door area
-                # This allows handles near the door boundary
                 margin_x = (door_x2 - door_x1) * 0.15
                 margin_y = (door_y2 - door_y1) * 0.15
 
-                # Check whether the handle is inside or near the door
                 if (
                     door_x1 - margin_x <= handle_center_x <= door_x2 + margin_x
                     and
@@ -120,7 +126,5 @@ class ObjectDetector:
             if handle_is_near_door:
                 filtered_detections.append(detection)
 
-        # Return the final filtered detections
-
-
+        # Return combined and filtered detections
         return filtered_detections
