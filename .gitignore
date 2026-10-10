@@ -1,2 +1,5 @@
 __pycache__
 *.pyc
+
+# Stairs dataset files (keep dataset on laptop, not GitHub)
+vision/stairs_dataset/
