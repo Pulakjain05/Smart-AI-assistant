@@ -106,7 +106,8 @@ def reset_system():
 window = tk.Tk()
 
 window.title("AI-VISION Safety System")
-window.geometry("700x600")
+window.geometry("700x850")
+window.minsize(700, 800)
 
 
 title = tk.Label(

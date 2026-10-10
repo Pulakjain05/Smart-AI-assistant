@@ -53,21 +53,32 @@ def understand_command(text):
         return "BEHIND_QUERY"
 
     # Front / ahead
+    
+    # Front / ahead
     elif any(phrase in text for phrase in [
         "what is ahead",
         "what's ahead",
+        "what is head",
+        "what's head",
         "what is the head",
         "what's the head",
         "what is a head",
         "what's a head",
         "what is in ahead",
         "what is in front of me",
+        "what's in front of me",
+        "what is in front",
+        "what's in front",
         "in front of me",
         "in front",
         "ahead of me",
+        "what lies ahead",
+        "what is in my way",
+        "what's in my way",
         "in my way"
     ]):
         return "OBJECT_QUERY"
+
 
     # Read text
     elif any(phrase in text for phrase in [
@@ -80,15 +91,26 @@ def understand_command(text):
         return "READ_TEXT"
 
     # Scene description
+   
+    # Scene description
     elif any(phrase in text for phrase in [
         "describe my surroundings",
+        "describe surroundings",
         "describe the surroundings",
         "describe my environment",
+        "describe the environment",
+        "describe the scene",
+        "describe scene",
         "what is around me",
         "what's around me",
-        "describe the scene"
+        "what is around",
+        "tell me my surroundings",
+        "tell me what is around me",
+        "look around",
+        "scan my surroundings"
     ]):
         return "DESCRIBE_SCENE"
+
 
     # Help
     elif any(word in text.split() for word in ["help", "emergency"]):

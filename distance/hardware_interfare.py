@@ -1,50 +1,65 @@
-# hardware_interface.py
 
-# -------------------------------
-# SIMULATED HARDWARE INTERFACE
-# -------------------------------
+# distance/hardware_interface.py
+# Simulated hardware interface for the AI-VISION project.
+
+from distance.safety_system import check_obstacle, sos_alert
+
 
 def read_distance():
-    """
-    Simulates distance sensor reading.
-    Later this function will read from
-    the real Raspberry Pi sensor.
-    """
-    distance = float(input("Enter distance in cm: "))
-    return distance
+    try:
+        distance = float(input("Enter distance in cm: "))
+        if distance < 0:
+            print("Invalid distance. Enter a non-negative value.")
+            return None
+        return distance
+    except ValueError:
+        print("Invalid input. Please enter a number.")
+        return None
 
 
 def vibration_on():
-    print("🔴 VIBRATION MOTOR: ON")
+    print("VIBRATION MOTOR: ON (simulation)")
 
 
 def vibration_off():
-    print("🟢 VIBRATION MOTOR: OFF")
+    print("VIBRATION MOTOR: OFF (simulation)")
 
 
-def read_sos_button():
-    """
-    Simulates SOS button.
-    Enter y for YES, n for NO.
-    """
-    choice = input("Press SOS button? (y/n): ").lower()
+def main():
+    print("================================")
+    print(" AI-VISION HARDWARE INTERFACE")
+    print("================================")
 
-    if choice == "y":
-        return True
+    while True:
+        print("\n1. Check obstacle distance")
+        print("2. Activate SOS")
+        print("3. Exit")
 
-    return False 
-    print("AI-VISION HARDWARE INTERFACE")
-print("----------------------------")
+        choice = input("Enter choice: ").strip()
 
-distance = read_distance()
-print("Distance:", distance, "cm")
+        if choice == "1":
+            distance = read_distance()
 
-if distance <= 20:
-    vibration_on()
-else:
-    vibration_off()
+            if distance is None:
+                continue
 
-if read_sos_button():
-    print("🚨 SOS ACTIVATED!")
-else:
-    print("SOS: OFF")
+            status = check_obstacle(distance)
+
+            if status == "DANGER":
+                vibration_on()
+            else:
+                vibration_off()
+
+        elif choice == "2":
+            sos_alert()
+
+        elif choice == "3":
+            print("Hardware interface test ended.")
+            break
+
+        else:
+            print("Please choose 1, 2, or 3.")
+
+
+if __name__ == "__main__":
+    main()

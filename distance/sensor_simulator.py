@@ -11,6 +11,7 @@ SAFE_DISTANCE = 150
 DANGER_DISTANCE = 80
 
 running = False
+sos_active = False
 
 # Simulated vibration modes
 vibration_mode = "SAFE"
@@ -74,6 +75,9 @@ def update_sensor():
 
     if not running:
         return
+    if sos_active:
+        window.after(1000, update_sensor)
+        return
 
     # Get simulated sensor value
     distance = get_sensor_distance()
@@ -122,7 +126,8 @@ def start_sensor():
 
 def stop_sensor():
 
-    global running, vibration_mode
+    global running, vibration_mode, sos_active
+    sos_active = False
     vibration_mode = "SAFE"
 
     running = False
@@ -147,13 +152,18 @@ def stop_sensor():
 
 
 def activate_sos():
-    global vibration_mode
+    global vibration_mode, sos_active
+    sos_active = True
     vibration_mode = "SOS"
+    
     messagebox.showwarning(
-        "SOS ALERT",
-        "Emergency alert triggered!\n\n"
-        "Location sharing can be connected later."
-    )
+    "SOS EMERGENCY ALERT",
+    "EMERGENCY MODE ACTIVATED!\n\n"
+    "The SOS alert is active.\n"
+    "Physical emergency messaging and "
+    "location sharing are not connected yet."
+)
+
 
     status_value.config(
         text="EMERGENCY",
@@ -168,6 +178,17 @@ def activate_sos():
         text="ALERT 📳",
         fg="red"
     )
+
+def reset_sos():
+    global sos_active, vibration_mode, vibration_phase
+
+    sos_active = False
+    vibration_phase = False
+    vibration_mode = "SAFE"
+
+    status_value.config(text="SAFE", fg="green")
+    warning_value.config(text="SOS reset. Check surroundings.")
+    vibration_value.config(text="OFF", fg="green")
 
 
 # ---------------------------------
@@ -306,6 +327,15 @@ sos_button = tk.Button(
 )
 
 sos_button.pack(pady=25)
+
+reset_sos_button = tk.Button(
+    window,
+    text="RESET SOS",
+    font=("Arial", 13, "bold"),
+    command=reset_sos
+)
+
+reset_sos_button.pack(pady=5)
 
 window.after(300, update_vibration_display)
 window.mainloop()
