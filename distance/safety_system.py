@@ -3,7 +3,7 @@
 # Simulated safety logic for the wearable assistant
 
 SAFE_DISTANCE = 150       # cm
-DANGER_DISTANCE = 80     # cm
+DANGER_DISTANCE = 80      # cm
 
 
 def check_obstacle(distance):
@@ -17,7 +17,7 @@ def check_obstacle(distance):
 
     if distance <= DANGER_DISTANCE:
         print("DANGER: Obstacle is very close!")
-        vibration_alert()
+        
         return "DANGER"
 
     elif distance <= SAFE_DISTANCE:
@@ -63,6 +63,8 @@ def get_distance_response(distance):
         return "The simulated sensor indicates the path is clear."
 
     return "Sorry, the distance reading is invalid."
+
+
 def main():
     print("================================")
     print(" AI-VISION SAFETY SYSTEM")
