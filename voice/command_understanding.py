@@ -117,7 +117,14 @@ def understand_command(text):
         return "HELP"
 
     # Stop
-    elif text in [
+    
+    # Normalize common recognition noise around safety commands
+    cleaned_text = text.strip().lower()
+
+    # Handle common Vosk unknown-token suffixes
+    cleaned_text = cleaned_text.replace("[unk]", "").strip()
+
+    if cleaned_text in [
         "stop",
         "stop this",
         "please stop",
@@ -129,7 +136,6 @@ def understand_command(text):
     ]:
         return "STOP"
 
-    return "UNKNOWN"
 
 
 if __name__ == "__main__":

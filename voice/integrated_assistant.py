@@ -42,25 +42,70 @@ vision = VisionInterface()
 
 
 
+
 def listen_for_command():
     try:
         with sr.Microphone() as source:
             print("\nListening...")
             audio = recognizer.listen(
                 source,
-                timeout=5,
+                timeout=6,
                 phrase_time_limit=8
             )
 
-        # Convert microphone audio to 16 kHz, 16-bit PCM for Vosk
         audio_data = audio.get_raw_data(
             convert_rate=16000,
             convert_width=2
         )
 
-        vosk_recognizer = KaldiRecognizer(vosk_model, 16000)
-        vosk_recognizer.AcceptWaveform(audio_data)
+        # Restrict recognition to phrases used by our assistant
+        command_phrases = [
+            "what is ahead",
+            "what's ahead",
+            "what is in front of me",
+            "what's in front of me",
+            "what is on my left",
+            "what's on my left",
+            "what is on my right",
+            "what's on my right",
+            "what is behind me",
+            "what's behind me",
+            "describe my surroundings",
+            "describe the surroundings",
+            "describe surroundings",
+"describe my environment",
+"describe the environment",
+"describe everything around me",
+"tell me my surroundings",
+"what is around me",
+"what do you see around me",
+"look around",
+"scan my surroundings",
+            "describe the scene",
+            "read this",
+            "read the text",
+            "read this text",
+            "how close is the obstacle",
+            "how far is the obstacle",
+            "what is the distance",
+            "tell me the distance",
+            "help",
+            "emergency",
+            "stop",
+            "stop this",
+            "please stop",
+            "quit assistant"
+        ]
 
+        grammar = json.dumps(command_phrases + ["[unk]"])
+
+        vosk_recognizer = KaldiRecognizer(
+            vosk_model,
+            16000,
+            grammar
+        )
+
+        vosk_recognizer.AcceptWaveform(audio_data)
         result = json.loads(vosk_recognizer.FinalResult())
         text = result.get("text", "").strip()
 
